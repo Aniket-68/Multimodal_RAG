@@ -69,14 +69,16 @@ Extractor  Extractor    Extractor  Extractor
 To adhere to the **Single Responsibility Principle (SRP)** and make the codebase modular and testable, we decouple the extraction logic from the parsing orchestrator:
 
 1. **Orchestration vs. Extraction**: The `PDFParser` acts purely as an orchestrator. It manages the document lifecycle (opening the file, iterating over pages) but delegates the actual work of parsing page elements to specialized extractors.
-2. **Single Responsibility**: Each extractor has a single, well-defined inputs and outputs contract:
+2. **Strict Internal Schemas**: Extractors do not return raw PyMuPDF objects or simple primitive types (like raw strings). They return our own strongly-typed models (e.g., `Block`, `PageMetadata`), ensuring all downstream RAG components are entirely isolated from third-party library internals.
+3. **Granular Extractor Definitions**:
    - **`TextExtractor`**: Takes a native page object (`fitz.Page`) and extracts raw text blocks, returning `List[Block]`. It does not perform layout analysis, OCR, or save images.
-   - **`ImageExtractor`**: Focuses solely on extracting images and pixel coordinates.
+   - **`MetadataExtractor`**: Extracts Page-level metadata fields into a structured `PageMetadata` model:
+     - `page_number`: 1-based index
+     - `width` / `height` / `rotation`
+     - Boolean flags: `has_text`, `has_images`, `has_links`
+   - **`ImageExtractor`**: Focuses on extracting image bytes, saving image assets locally, and compiling coordinate & bounding box metadata. This acts as a foundation for Phase 4 where images are sent to Vision-Language Models (VLMs) for captioning.
    - **`TableExtractor`**: Focuses solely on tabular boundaries and cell structures.
-   - **`MetadataExtractor`**: Extracts metadata fields.
-3. **Decoupled Evolution**: By isolating extraction code into distinct classes, we can upgrade or replace individual extraction mechanisms (e.g., using deep learning or OCR for tables/images later) without affecting the orchestrator or other extractors.
-4. **Text-First Dependency**: Text is the critical path for down-stream RAG tasks (chunking, embeddings, retrieval). Isolating the `TextExtractor` allows us to implement, test, and run the core pipeline first, incrementally adding images and tables later as additional context.
-
+4. **Text-First Dependency**: Text is the critical path for downstream RAG tasks (chunking, embeddings, retrieval). Isolating the `TextExtractor` allows us to implement, test, and run the core pipeline first, incrementally adding images and tables later as additional context.
 
 ---
 
@@ -86,13 +88,15 @@ To adhere to the **Single Responsibility Principle (SRP)** and make the codebase
 backend/
 ├── app/
 │   ├── api/             # API Router and Endpoints
-│   ├── ingestion/       # Loader, Parser, and Layout Layers
+│   ├── ingestion/       # Ingestion and preprocessing pipeline
 │   │   ├── loaders/     # File loaders returning native doc objects
-│   │   └── parsers/     # Base parsers converting to internal schema
-│   ├── models/          # StructuredDocument, Page, Block, BoundingBox
+│   │   ├── parsers/     # Base/orchestrator parsers
+│   │   └── extractors/  # Isolated data extractors (Text, Image, Table, Metadata)
+│   ├── models/          # Pydantic schemas (document, metadata blocks)
 │   └── services/        # Orchestration services
 └── frontend/            # React & Vite application with glassmorphism UI
 ```
+
 
 ---
 

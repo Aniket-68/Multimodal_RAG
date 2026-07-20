@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional, Literal
 
 from pydantic import BaseModel, Field
-
+from .metadata import PageMetadata
 
 class BoundingBox(BaseModel):
     """Coordinates of an element on a PDF page."""
@@ -47,11 +47,7 @@ class Block(BaseModel):
 class Page(BaseModel):
     """Represents one page in the document."""
 
-    page_number: int
-
-    width: float
-
-    height: float
+    metadata: PageMetadata
 
     blocks: List[Block] = Field(default_factory=list)
 
