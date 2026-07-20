@@ -1,8 +1,10 @@
 from pathlib import Path
 from typing import List, Optional, Literal
 
+from mlflow import Image
 from pydantic import BaseModel, Field
 from .metadata import PageMetadata
+from .image import ImageModel
 
 class BoundingBox(BaseModel):
     """Coordinates of an element on a PDF page."""
@@ -50,6 +52,8 @@ class Page(BaseModel):
     metadata: PageMetadata
 
     blocks: List[Block] = Field(default_factory=list)
+
+    images: List[ImageModel] = Field(default_factory=list)
 
 
 class StructuredDocument(BaseModel):
