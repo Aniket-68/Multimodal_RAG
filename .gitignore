@@ -1,0 +1,7 @@
+.env
+backend/data
+backend/venv
+
+frotend/node_modules
+frontend/package.json
+frontend/tsconfig.json
