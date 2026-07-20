@@ -3,13 +3,14 @@ from app.models.document import ( PageMetadata )
 import fitz  # PyMuPDF
 
 class MetadataExtractor(BaseExtractor):
-    def extract(self, page: fitz.Page) -> PageMetadata:
+    def extract(self, context: ParserContext) -> PageMetadata:
         """
         Extracts metadata from a PDF page.
 
         Args:
-            page (fitz.Page): The PDF page from which to extract metadata.
+            context (ParserContext): The context for parsing the document.
         """
+        page=context.page  # Get the current page from the context
         return PageMetadata(
             page_number=page.number+1,
             width=page.rect.width,

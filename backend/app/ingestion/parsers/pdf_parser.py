@@ -11,7 +11,7 @@ from app.ingestion.extractors.text_extractor import TextExtractor
 from app.ingestion.extractors.metadata_extractor import MetadataExtractor
 from app.ingestion.extractors.image_extractor import ImageExtractor
 from .base_parser import BaseParser
-
+from app.ingestion.context import ParserContext
 
 class PDFParser(BaseParser):
     """
@@ -22,6 +22,8 @@ class PDFParser(BaseParser):
         self.text_extractor = text_extractor
         self.metadata_extractor = metadata_extractor
         self.image_extractor = image_extractor
+        self.output_dir = image_extractor.output_dir
+
 
     def parse(self, file_path: Path) -> StructuredDocument:
 
@@ -35,9 +37,16 @@ class PDFParser(BaseParser):
 
                 # Notice how PDFParser no longer knows how text is extracted. It simply coordinates the workflow.
                 # The parser remains an orchestrator, while each extractor owns a single responsibility. This architecture is easier to extend, test, and maintain as the project grows.
-                text_blocks = self.text_extractor.extract(page) # Extract text blocks from the page
-                metadata = self.metadata_extractor.extract(page) # Extract metadata from the page
-                images = self.image_extractor.extract(pdf, page) # Extract images from the page
+                context = ParserContext(
+                    document=pdf,   
+                    page=page,
+                    page_number=page_number,
+                    output_dir=self.output_dir)
+
+
+                text_blocks = self.text_extractor.extract(context) # Extract text blocks from the page
+                metadata = self.metadata_extractor.extract(context) # Extract metadata from the page
+                images = self.image_extractor.extract(context) # Extract images from the page
 
                 pages.append(
                     Page(

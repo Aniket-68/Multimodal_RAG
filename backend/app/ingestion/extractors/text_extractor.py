@@ -3,16 +3,18 @@ import fitz  # PyMuPDF
 
 from .base_extractor import BaseExtractor
 from app.models.document import ( Block, BoundingBox )
+from app.ingestion.context import ParserContext
 
 class TextExtractor(BaseExtractor):
-    def extract(self, page: fitz.Page) -> List[Block]:
+    def extract(self, context: ParserContext) -> List[Block]:
         """
         Extracts text blocks from a PDF page.
 
         Args:
-            page (fitz.Page): The PDF page from which to extract text.
+            context (ParserContext): The context for parsing the document.
             # not need to open fitz, as the page is already provided
             """
+        page=context.page  # Get the current page from the context
         extracted_blocks:List[Block] = [] # List to hold the extracted text blocks
         blocks=page.get_text("blocks")
 

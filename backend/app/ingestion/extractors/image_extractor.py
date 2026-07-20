@@ -7,6 +7,7 @@ from PIL import image # Python Imaging Library, used for opening, manipulating, 
 
 from .base_extractor import BaseExtractor
 from app.models.image import ImageModel
+from app.ingestion.context import ParserContext
 
 
 class ImageExtractor(BaseExtractor):
@@ -21,14 +22,15 @@ class ImageExtractor(BaseExtractor):
         self.output_dir = output_dir # it is a Path object representing the directory where extracted images will be saved
         self.output_dir.mkdir(parents=True, exist_ok=True)  # Create the output directory if it doesn't exist
 
-    def extract(self, pdf: fitz.Document, page: fitz.Page) -> list[ImageModel]:
+    def extract(self, context: ParserContext) -> list[ImageModel]:
         """
         Extracts images from a PDF page.
 
         Args:
-            pdf (fitz.Document): The PDF document.
-            page (fitz.Page): The PDF page from which to extract images.
+            context (ParserContext): The context for parsing the document.
         """
+        pdf=context.document  # Get the PDF document from the context
+        page=context.page  # Get the current page from the context
 
         extracted_images: list[ImageModel] = []  # List to hold the extracted images
 
@@ -69,6 +71,6 @@ class ImageExtractor(BaseExtractor):
                     metadata={},  # You can add any additional metadata here if needed
                 )
             )
-
+        return extracted_images
 
        
