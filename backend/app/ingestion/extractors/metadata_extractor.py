@@ -1,5 +1,6 @@
 from .base_extractor import BaseExtractor
 from app.models.document import ( PageMetadata )
+from app.ingestion.context import ParserContext
 import fitz  # PyMuPDF
 
 class MetadataExtractor(BaseExtractor):

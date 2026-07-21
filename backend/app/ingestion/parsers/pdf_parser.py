@@ -10,6 +10,7 @@ from app.models.document import (
 from app.ingestion.extractors.text_extractor import TextExtractor
 from app.ingestion.extractors.metadata_extractor import MetadataExtractor
 from app.ingestion.extractors.image_extractor import ImageExtractor
+from app.ingestion.extractors.table_extractor import TableExtractor
 from .base_parser import BaseParser
 from app.ingestion.context import ParserContext
 
@@ -18,11 +19,11 @@ class PDFParser(BaseParser):
     Parses PDF documents into StructuredDocument.
     """
     # Class constructor that takes a TextExtractor instance as an argument
-    def __init__(self, text_extractor: TextExtractor, metadata_extractor: MetadataExtractor, image_extractor: ImageExtractor):
+    def __init__(self, text_extractor: TextExtractor, metadata_extractor: MetadataExtractor, image_extractor: ImageExtractor, table_extractor: TableExtractor = None):
         self.text_extractor = text_extractor
         self.metadata_extractor = metadata_extractor
         self.image_extractor = image_extractor
-        self.output_dir = image_extractor.output_dir
+        self.table_extractor = table_extractor  # Initialize table_extractor to the provided instance or None if not provided   
 
 
     def parse(self, file_path: Path) -> StructuredDocument:
@@ -41,18 +42,20 @@ class PDFParser(BaseParser):
                     document=pdf,   
                     page=page,
                     page_number=page_number,
-                    output_dir=self.output_dir)
+                    output_dir=self.image_extractor.output_dir )  # Pass the output directory to the context for image extraction)
 
 
                 text_blocks = self.text_extractor.extract(context) # Extract text blocks from the page
                 metadata = self.metadata_extractor.extract(context) # Extract metadata from the page
                 images = self.image_extractor.extract(context) # Extract images from the page
+                tables = self.table_extractor.extract(context)   # Extract tables from the page if table_extractor is provided
 
                 pages.append(
                     Page(
                         metadata=metadata,
                         blocks=text_blocks,
                         images=images,  
+                        tables=tables,  # Add the extracted tables to the Page model
                     )
                 )
 

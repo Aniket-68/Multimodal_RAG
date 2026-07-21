@@ -3,16 +3,12 @@ from typing import List, Optional, Literal
 
 from mlflow import Image
 from pydantic import BaseModel, Field
-from .metadata import PageMetadata
-from .image import ImageModel
 
-class BoundingBox(BaseModel):
-    """Coordinates of an element on a PDF page."""
-    
-    x0: float
-    y0: float
-    x1: float
-    y1: float
+from app.models.common import BoundingBox
+from app.models.metadata import PageMetadata
+from app.models.image import ImageModel
+from app.models.table import TableModel
+
 
 
 class Block(BaseModel):
@@ -54,6 +50,9 @@ class Page(BaseModel):
     blocks: List[Block] = Field(default_factory=list)
 
     images: List[ImageModel] = Field(default_factory=list)
+
+    tables: List[TableModel] = Field(default_factory=list) # in short - it represents the tables extracted from the page. Each TableModel instance contains information about a single table, including its unique identifier, page number, bounding box, header, rows, and any additional metadata. This allows for structured representation and easy access to table data within the document.
+
 
 
 class StructuredDocument(BaseModel):
