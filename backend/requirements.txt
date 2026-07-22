@@ -7,7 +7,7 @@ python-multipart
 logfire
 
 qdrant-client
-
+paddleocr
 
 # ==============================
 # Configuration

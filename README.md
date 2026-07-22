@@ -8,13 +8,13 @@ A production-grade **Multimodal Retrieval-Augmented Generation (RAG)** system bu
 
 The system is divided into five major phases. Currently, the project is focusing on **Phase 1**.
 
-| Phase | Objective | Deliverable | Status |
-| :--- | :--- | :--- | :--- |
-| **Phase 1** | **Document Ingestion & Understanding** | PDF → Structured Document | 🔄 In Progress |
-| **Phase 2** | **Knowledge Representation** | Chunks → Embeddings → Vector Database | ⏳ Planned |
-| **Phase 3** | **Retrieval Engine** | Semantic Search & Hybrid Retrieval | ⏳ Planned |
-| **Phase 4** | **Multimodal Intelligence** | Images, Tables, OCR, Vision Models | ⏳ Planned |
-| **Phase 5** | **Production RAG** | APIs, LLM, Chat UI, Deployment, Evaluation | ⏳ Planned |
+| Phase       | Objective                              | Deliverable                                | Status         |
+| :---------- | :------------------------------------- | :----------------------------------------- | :------------- |
+| **Phase 1** | **Document Ingestion & Understanding** | PDF → Structured Document                  | 🔄 In Progress |
+| **Phase 2** | **Knowledge Representation**           | Chunks → Embeddings → Vector Database      | ⏳ Planned     |
+| **Phase 3** | **Retrieval Engine**                   | Semantic Search & Hybrid Retrieval         | ⏳ Planned     |
+| **Phase 4** | **Multimodal Intelligence**            | Images, Tables, OCR, Vision Models         | ⏳ Planned     |
+| **Phase 5** | **Production RAG**                     | APIs, LLM, Chat UI, Deployment, Evaluation | ⏳ Planned     |
 
 ---
 
@@ -23,7 +23,9 @@ The system is divided into five major phases. Currently, the project is focusing
 The goal of Phase 1 is to transform an unstructured PDF into a **Structured Document** representation that can later be indexed and retrieved.
 
 ### Why is Phase 1 Necessary?
+
 Large Language Models (LLMs) cannot process PDF binaries directly. Before downstream tasks (like chunking and vector storage) can begin, we must extract:
+
 - **Text & Metadata** (structure, coordinates, and tags)
 - **Reading Order & Layout** (distinguishing headings, body, headers, footers)
 - **Images & Embedded Media**
@@ -97,7 +99,6 @@ backend/
 └── frontend/            # React & Vite application with glassmorphism UI
 ```
 
-
 ---
 
 ## 📐 Design Principles
@@ -111,29 +112,30 @@ backend/
 
 ## 📦 Backend Stack (Phase 1 Dependencies)
 
-| Package | Purpose | Phase |
-| :--- | :--- | :--- |
-| **FastAPI** | REST API framework for high performance web endpoints | 1 |
-| **Uvicorn** | ASGI web server execution for hosting the FastAPI app | 1 |
-| **python-multipart** | Streaming support for multipart/form-data PDF file uploads | 1 |
-| **PyMuPDF** | Rapid PDF parsing, page rendering, and embedded image extraction | 1 |
-| **Docling** | Document layout analysis, structural zoning, and schema-based document conversion | 1 |
-| **pymupdf4llm** | Specialized text extraction targeting LLM-friendly Markdown format | 1 |
-| **PaddleOCR** | Optical Character Recognition for scanned images and non-selectable text PDFs | 1 |
-| **Pillow** | Image processing library for reading, saving, and editing page assets | 1 |
-| **OpenCV** | Computer vision preprocessing (denoising, binarization, rotation correction) | 1 |
-| **NumPy** | High-performance array structures for pixel data and coordinate math | 1 |
-| **Pandas** | Tabular data extraction, dataframes, and structured table manipulation | 1 |
-| **Loguru** | Structured, clean logging with customizable formats and automatic rotation | 1 |
-| **orjson** | Fast, binary-driven JSON serialization and deserialization | 1 |
-| **httpx** | Async HTTP client for external service integration and API calls | 1 |
-| **pytest** | Unit testing, test harness execution, and automation checks | 1 |
+| Package              | Purpose                                                                           | Phase |
+| :------------------- | :-------------------------------------------------------------------------------- | :---- |
+| **FastAPI**          | REST API framework for high performance web endpoints                             | 1     |
+| **Uvicorn**          | ASGI web server execution for hosting the FastAPI app                             | 1     |
+| **python-multipart** | Streaming support for multipart/form-data PDF file uploads                        | 1     |
+| **PyMuPDF**          | Rapid PDF parsing, page rendering, and embedded image extraction                  | 1     |
+| **Docling**          | Document layout analysis, structural zoning, and schema-based document conversion | 1     |
+| **pymupdf4llm**      | Specialized text extraction targeting LLM-friendly Markdown format                | 1     |
+| **PaddleOCR**        | Optical Character Recognition for scanned images and non-selectable text PDFs     | 1     |
+| **Pillow**           | Image processing library for reading, saving, and editing page assets             | 1     |
+| **OpenCV**           | Computer vision preprocessing (denoising, binarization, rotation correction)      | 1     |
+| **NumPy**            | High-performance array structures for pixel data and coordinate math              | 1     |
+| **Pandas**           | Tabular data extraction, dataframes, and structured table manipulation            | 1     |
+| **Loguru**           | Structured, clean logging with customizable formats and automatic rotation        | 1     |
+| **orjson**           | Fast, binary-driven JSON serialization and deserialization                        | 1     |
+| **httpx**            | Async HTTP client for external service integration and API calls                  | 1     |
+| **pytest**           | Unit testing, test harness execution, and automation checks                       | 1     |
 
 ---
 
 ## 🚀 Getting Started
 
 ### Backend
+
 1. Initialize your Python environment (e.g., using `venv` or `conda`).
 2. Install dependencies:
    ```bash
@@ -145,6 +147,7 @@ backend/
    ```
 
 ### Frontend
+
 1. Navigate to the frontend directory:
    ```bash
    cd frontend
@@ -157,3 +160,5 @@ backend/
    ```bash
    npm run dev
    ```
+
+# paddleocr is a library for Optical Character Recognition (OCR) that can recognize text in images. It supports multiple languages and provides pre-trained models for text detection and recognition. difference between paddleocr and pytesseract - PaddleOCR is a deep learning-based OCR tool that uses PaddlePaddle framework, while pytesseract is a Python wrapper for Google's Tesseract-OCR Engine. PaddleOCR generally provides better accuracy and supports more languages, while pytesseract is simpler to use and integrates well with Python applications. Difference between OCR and VLM - OCR (Optical Character Recognition) is a technology that converts different types of documents, such as scanned paper documents, PDF files, or images captured by a digital camera, into editable and searchable data. VLM (Vision-Language Model) is a type of model that combines visual and textual information to understand and generate content. While OCR focuses on extracting text from images, VLMs can understand the context of both images and text, enabling tasks like image captioning, visual question answering, and multimodal content generation.
