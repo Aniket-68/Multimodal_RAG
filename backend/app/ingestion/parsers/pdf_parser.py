@@ -13,17 +13,19 @@ from app.ingestion.extractors.image_extractor import ImageExtractor
 from app.ingestion.extractors.table_extractor import TableExtractor
 from .base_parser import BaseParser
 from app.ingestion.context import ParserContext
+from app.ingestion.processors.table_text_deduplicator import TableTextDeduplicator
 
 class PDFParser(BaseParser):
     """
     Parses PDF documents into StructuredDocument.
     """
     # Class constructor that takes a TextExtractor instance as an argument
-    def __init__(self, text_extractor: TextExtractor, metadata_extractor: MetadataExtractor, image_extractor: ImageExtractor, table_extractor: TableExtractor = None):
+    def __init__(self, text_extractor: TextExtractor, metadata_extractor: MetadataExtractor, image_extractor: ImageExtractor, table_extractor: TableExtractor = None,table_text_deduplicator: TableTextDeduplicator = None):
         self.text_extractor = text_extractor
         self.metadata_extractor = metadata_extractor
         self.image_extractor = image_extractor
         self.table_extractor = table_extractor  # Initialize table_extractor to the provided instance or None if not provided   
+        self.table_text_deduplicator = table_text_deduplicator
 
 
     def parse(self, file_path: Path) -> StructuredDocument:
@@ -44,11 +46,15 @@ class PDFParser(BaseParser):
                     page_number=page_number,
                     output_dir=self.image_extractor.output_dir )  # Pass the output directory to the context for image extraction)
 
+                tables = self.table_extractor.extract(context)   # Extract tables from the page if table_extractor is provided
 
                 text_blocks = self.text_extractor.extract(context) # Extract text blocks from the page
+                
+                text_blocks=self.table_text_deduplicator.process(text_blocks,tables)  # Remove text blocks that are completely overlapped by table blocks if table_text_deduplicator is provided
+                
                 metadata = self.metadata_extractor.extract(context) # Extract metadata from the page
                 images = self.image_extractor.extract(context) # Extract images from the page
-                tables = self.table_extractor.extract(context)   # Extract tables from the page if table_extractor is provided
+          
 
                 pages.append(
                     Page(
